@@ -14,6 +14,7 @@ import { useRouter } from 'expo-router';
 import { useAuth } from '../contexts/AuthContext';
 import { Input } from '../components/Input';
 import { Button } from '../components/Button';
+import { theme } from '../constants/theme';
 
 export default function LoginScreen() {
   const router = useRouter();
@@ -42,7 +43,7 @@ export default function LoginScreen() {
       Alert.alert('Login failed', error.message);
       return;
     }
-    router.replace('/home');
+    router.replace('/(tabs)');
   };
 
   return (
@@ -104,7 +105,7 @@ export default function LoginScreen() {
 }
 
 const styles = StyleSheet.create({
-  safe: { flex: 1, backgroundColor: '#f1f5f9' },
+  safe: { flex: 1, backgroundColor: theme.backgroundSecondary },
   container: { flex: 1 },
   scrollContent: {
     flexGrow: 1,
@@ -115,22 +116,19 @@ const styles = StyleSheet.create({
     alignSelf: 'center',
   },
   card: {
-    backgroundColor: '#fff',
+    backgroundColor: theme.card,
     borderRadius: 16,
+    borderWidth: 1,
+    borderColor: theme.border,
     padding: 24,
     marginBottom: 24,
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.06,
-    shadowRadius: 8,
-    elevation: 3,
   },
-  brand: { fontSize: 13, fontWeight: '600', color: '#2563eb', letterSpacing: 0.5, marginBottom: 8 },
-  title: { fontSize: 24, fontWeight: '700', color: '#111827', marginBottom: 6 },
-  subtitle: { fontSize: 15, color: '#6b7280', marginBottom: 24 },
+  brand: { fontSize: 13, fontWeight: '600', color: theme.primary, letterSpacing: 0.5, marginBottom: 8 },
+  title: { fontSize: 24, fontWeight: '700', color: theme.text, marginBottom: 6 },
+  subtitle: { fontSize: 15, color: theme.textSecondary, marginBottom: 24 },
   forgotLink: { alignSelf: 'flex-end', marginBottom: 20 },
-  forgotText: { fontSize: 14, color: '#2563eb', fontWeight: '600' },
+  forgotText: { fontSize: 14, color: theme.primary, fontWeight: '600' },
   footer: { flexDirection: 'row', justifyContent: 'center', alignItems: 'center' },
-  footerText: { fontSize: 15, color: '#6b7280' },
-  footerLink: { fontSize: 15, color: '#2563eb', fontWeight: '600' },
+  footerText: { fontSize: 15, color: theme.textSecondary },
+  footerLink: { fontSize: 15, color: theme.primary, fontWeight: '600' },
 });

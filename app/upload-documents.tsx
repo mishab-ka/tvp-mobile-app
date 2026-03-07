@@ -15,6 +15,7 @@ import * as ImagePicker from 'expo-image-picker';
 import { useAuth } from '../contexts/AuthContext';
 import { supabase } from '../lib/supabase';
 import { uploadDriverDocument } from '../lib/upload';
+import { theme } from '../constants/theme';
 
 const DOCUMENTS = [
   { id: 'profile', label: 'Profile Photo', field: 'profile_photo_url', type: 'profile' },
@@ -114,7 +115,7 @@ export default function UploadDocumentsScreen() {
                   </Text>
                 </View>
                 {loading ? (
-                  <ActivityIndicator size="small" color="#2563eb" />
+                  <ActivityIndicator size="small" color={theme.primary} />
                 ) : uploaded && doc.id === 'profile' && driver?.profile_photo_url ? (
                   <Image source={{ uri: driver.profile_photo_url }} style={styles.thumb} />
                 ) : (
@@ -136,27 +137,24 @@ export default function UploadDocumentsScreen() {
 }
 
 const styles = StyleSheet.create({
-  safe: { flex: 1, backgroundColor: '#f1f5f9' },
+  safe: { flex: 1, backgroundColor: theme.backgroundSecondary },
   container: { flex: 1 },
   content: { padding: 20, paddingBottom: 40 },
   center: { flex: 1, justifyContent: 'center', alignItems: 'center', padding: 24 },
-  noDriver: { fontSize: 16, color: '#6b7280', marginBottom: 16 },
+  noDriver: { fontSize: 16, color: theme.textSecondary, marginBottom: 16 },
   back: { marginBottom: 16 },
-  backText: { fontSize: 16, color: '#2563eb', fontWeight: '600' },
-  backBtn: { paddingVertical: 12, paddingHorizontal: 20, backgroundColor: '#2563eb', borderRadius: 10 },
+  backText: { fontSize: 16, color: theme.primary, fontWeight: '600' },
+  backBtn: { paddingVertical: 12, paddingHorizontal: 20, backgroundColor: theme.primary, borderRadius: 12 },
   backBtnText: { fontSize: 15, fontWeight: '600', color: '#fff' },
-  title: { fontSize: 22, fontWeight: '700', color: '#111827', marginBottom: 8 },
-  subtitle: { fontSize: 14, color: '#6b7280', marginBottom: 20, lineHeight: 20 },
+  title: { fontSize: 22, fontWeight: '700', color: theme.text, marginBottom: 8 },
+  subtitle: { fontSize: 14, color: theme.textSecondary, marginBottom: 20, lineHeight: 20 },
   card: {
-    backgroundColor: '#fff',
+    backgroundColor: theme.card,
     borderRadius: 16,
+    borderWidth: 1,
+    borderColor: theme.border,
     padding: 4,
     marginBottom: 20,
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.06,
-    shadowRadius: 8,
-    elevation: 3,
   },
   docRow: {
     flexDirection: 'row',
@@ -164,16 +162,16 @@ const styles = StyleSheet.create({
     justifyContent: 'space-between',
     padding: 16,
     borderBottomWidth: 1,
-    borderBottomColor: '#f3f4f6',
+    borderBottomColor: theme.borderLight,
   },
   docRowDisabled: { opacity: 0.7 },
   docLeft: { flex: 1 },
-  docLabel: { fontSize: 16, fontWeight: '600', color: '#111827', marginBottom: 4 },
-  docStatusOk: { fontSize: 13, color: '#059669' },
-  docStatusPending: { fontSize: 13, color: '#d97706' },
-  thumb: { width: 48, height: 48, borderRadius: 24, backgroundColor: '#f3f4f6' },
-  uploadBadge: { backgroundColor: '#2563eb', paddingVertical: 8, paddingHorizontal: 14, borderRadius: 10 },
+  docLabel: { fontSize: 16, fontWeight: '600', color: theme.text, marginBottom: 4 },
+  docStatusOk: { fontSize: 13, color: theme.success },
+  docStatusPending: { fontSize: 13, color: theme.warning },
+  thumb: { width: 48, height: 48, borderRadius: 24, backgroundColor: theme.borderLight },
+  uploadBadge: { backgroundColor: theme.primary, paddingVertical: 8, paddingHorizontal: 14, borderRadius: 10 },
   uploadBadgeText: { fontSize: 14, fontWeight: '600', color: '#fff' },
-  warningBox: { backgroundColor: '#fef3c7', padding: 14, borderRadius: 12 },
+  warningBox: { backgroundColor: '#fef9c3', padding: 14, borderRadius: 12 },
   warningText: { fontSize: 13, color: '#92400e' },
 });

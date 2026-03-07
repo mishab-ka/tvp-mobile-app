@@ -15,6 +15,7 @@ import { useAuth } from '../contexts/AuthContext';
 import { supabase } from '../lib/supabase';
 import { Input } from '../components/Input';
 import { Button } from '../components/Button';
+import { theme } from '../constants/theme';
 
 export default function RegisterScreen() {
   const router = useRouter();
@@ -71,7 +72,7 @@ export default function RegisterScreen() {
       }
 
       await refreshDriver();
-      router.replace('/home');
+      router.replace('/(tabs)');
     } catch (e: unknown) {
       const message = e instanceof Error ? e.message : 'Something went wrong';
       Alert.alert('Error', message);
@@ -164,7 +165,7 @@ export default function RegisterScreen() {
 }
 
 const styles = StyleSheet.create({
-  safe: { flex: 1, backgroundColor: '#f1f5f9' },
+  safe: { flex: 1, backgroundColor: theme.backgroundSecondary },
   container: { flex: 1 },
   scrollContent: {
     padding: 20,
@@ -174,21 +175,18 @@ const styles = StyleSheet.create({
     alignSelf: 'center',
   },
   back: { marginBottom: 20 },
-  backText: { fontSize: 16, color: '#2563eb', fontWeight: '600' },
+  backText: { fontSize: 16, color: theme.primary, fontWeight: '600' },
   card: {
-    backgroundColor: '#fff',
+    backgroundColor: theme.card,
     borderRadius: 16,
+    borderWidth: 1,
+    borderColor: theme.border,
     padding: 24,
     marginBottom: 24,
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.06,
-    shadowRadius: 8,
-    elevation: 3,
   },
-  title: { fontSize: 22, fontWeight: '700', color: '#111827', marginBottom: 6 },
-  subtitle: { fontSize: 15, color: '#6b7280', marginBottom: 24 },
+  title: { fontSize: 22, fontWeight: '700', color: theme.text, marginBottom: 6 },
+  subtitle: { fontSize: 15, color: theme.textSecondary, marginBottom: 24 },
   footer: { flexDirection: 'row', justifyContent: 'center', alignItems: 'center' },
-  footerText: { fontSize: 15, color: '#6b7280' },
-  footerLink: { fontSize: 15, color: '#2563eb', fontWeight: '600' },
+  footerText: { fontSize: 15, color: theme.textSecondary },
+  footerLink: { fontSize: 15, color: theme.primary, fontWeight: '600' },
 });

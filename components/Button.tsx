@@ -1,5 +1,6 @@
 import React from 'react';
 import { TouchableOpacity, Text, StyleSheet, ActivityIndicator } from 'react-native';
+import { theme } from '../constants/theme';
 
 interface ButtonProps {
   title: string;
@@ -22,7 +23,7 @@ export function Button({ title, onPress, variant = 'primary', loading, disabled 
       activeOpacity={0.8}
     >
       {loading ? (
-        <ActivityIndicator color={variant === 'outline' || variant === 'secondary' ? '#2563eb' : '#fff'} />
+        <ActivityIndicator color={variant === 'outline' || variant === 'secondary' ? theme.primary : '#fff'} />
       ) : (
         <Text style={[styles.text, variant === 'outline' || variant === 'secondary' ? styles.textSecondary : styles.textPrimary]}>
           {title}
@@ -35,16 +36,16 @@ export function Button({ title, onPress, variant = 'primary', loading, disabled 
 const styles = StyleSheet.create({
   button: {
     paddingVertical: 14,
-    borderRadius: 10,
+    borderRadius: 12,
     alignItems: 'center',
     justifyContent: 'center',
     minHeight: 48,
   },
-  primary: { backgroundColor: '#2563eb' },
-  secondary: { backgroundColor: '#f1f5f9' },
-  outline: { backgroundColor: 'transparent', borderWidth: 1, borderColor: '#2563eb' },
+  primary: { backgroundColor: theme.primary },
+  secondary: { backgroundColor: theme.backgroundSecondary },
+  outline: { backgroundColor: 'transparent', borderWidth: 1, borderColor: theme.primary },
   disabled: { opacity: 0.6 },
   text: { fontSize: 16, fontWeight: '600' },
   textPrimary: { color: '#fff' },
-  textSecondary: { color: '#2563eb' },
+  textSecondary: { color: theme.primary },
 });

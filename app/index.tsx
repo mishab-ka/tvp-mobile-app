@@ -11,7 +11,7 @@ export default function Index() {
   useEffect(() => {
     if (loading) return;
     if (session) {
-      router.replace('/home');
+      router.replace('/(tabs)');
     } else {
       router.replace('/login');
     }
@@ -19,7 +19,7 @@ export default function Index() {
 
   return (
     <SafeAreaView style={styles.container} edges={['top', 'bottom']}>
-      <ActivityIndicator size="large" color="#2563eb" />
+      <ActivityIndicator size="large" color="#84cc16" />
     </SafeAreaView>
   );
 }
@@ -29,6 +29,6 @@ const styles = StyleSheet.create({
     flex: 1,
     justifyContent: 'center',
     alignItems: 'center',
-    backgroundColor: '#f1f5f9',
+    backgroundColor: '#f8faf5',
   },
 });

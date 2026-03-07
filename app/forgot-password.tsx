@@ -14,6 +14,7 @@ import { useRouter } from 'expo-router';
 import { useAuth } from '../contexts/AuthContext';
 import { Input } from '../components/Input';
 import { Button } from '../components/Button';
+import { theme } from '../constants/theme';
 
 export default function ForgotPasswordScreen() {
   const router = useRouter();
@@ -103,7 +104,7 @@ export default function ForgotPasswordScreen() {
 }
 
 const styles = StyleSheet.create({
-  safe: { flex: 1, backgroundColor: '#f1f5f9' },
+  safe: { flex: 1, backgroundColor: theme.backgroundSecondary },
   container: { flex: 1 },
   scrollContent: {
     flexGrow: 1,
@@ -114,21 +115,18 @@ const styles = StyleSheet.create({
   },
   sentContainer: { flex: 1, padding: 20, justifyContent: 'center', alignItems: 'center' },
   back: { marginBottom: 20 },
-  backText: { fontSize: 16, color: '#2563eb', fontWeight: '600' },
+  backText: { fontSize: 16, color: theme.primary, fontWeight: '600' },
   card: {
-    backgroundColor: '#fff',
+    backgroundColor: theme.card,
     borderRadius: 16,
+    borderWidth: 1,
+    borderColor: theme.border,
     padding: 24,
     width: '100%',
     maxWidth: 420,
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.06,
-    shadowRadius: 8,
-    elevation: 3,
   },
-  title: { fontSize: 22, fontWeight: '700', color: '#111827', marginBottom: 12 },
-  subtitle: { fontSize: 15, color: '#6b7280', marginBottom: 24 },
-  message: { fontSize: 15, color: '#6b7280', marginBottom: 24 },
-  errorText: { fontSize: 12, color: '#dc2626', marginTop: -8, marginBottom: 12 },
+  title: { fontSize: 22, fontWeight: '700', color: theme.text, marginBottom: 12 },
+  subtitle: { fontSize: 15, color: theme.textSecondary, marginBottom: 24 },
+  message: { fontSize: 15, color: theme.textSecondary, marginBottom: 24 },
+  errorText: { fontSize: 12, color: theme.error, marginTop: -8, marginBottom: 12 },
 });

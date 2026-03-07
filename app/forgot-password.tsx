@@ -9,6 +9,7 @@ import {
   Alert,
   TouchableOpacity,
 } from 'react-native';
+import { SafeAreaView } from 'react-native-safe-area-context';
 import { useRouter } from 'expo-router';
 import { useAuth } from '../contexts/AuthContext';
 import { Input } from '../components/Input';
@@ -49,66 +50,85 @@ export default function ForgotPasswordScreen() {
 
   if (sent) {
     return (
-      <View style={styles.container}>
-        <View style={styles.box}>
-          <Text style={styles.title}>Check your email</Text>
-          <Text style={styles.message}>
-            We've sent a password reset link to {email}. Open the link to set a new password.
-          </Text>
-          <Button title="Back to Login" onPress={() => router.back()} variant="primary" />
+      <SafeAreaView style={styles.safe} edges={['top', 'bottom']}>
+        <View style={styles.sentContainer}>
+          <View style={styles.card}>
+            <Text style={styles.title}>Check your email</Text>
+            <Text style={styles.message}>
+              We've sent a password reset link to {email}. Open the link to set a new password.
+            </Text>
+            <Button title="Back to Login" onPress={() => router.back()} variant="primary" />
+          </View>
         </View>
-      </View>
+      </SafeAreaView>
     );
   }
 
   return (
-    <KeyboardAvoidingView
-      style={styles.container}
-      behavior={Platform.OS === 'ios' ? 'padding' : undefined}
-    >
-      <ScrollView
-        contentContainerStyle={styles.scrollContent}
-        keyboardShouldPersistTaps="handled"
-        showsVerticalScrollIndicator={false}
+    <SafeAreaView style={styles.safe} edges={['top', 'bottom']}>
+      <KeyboardAvoidingView
+        style={styles.container}
+        behavior={Platform.OS === 'ios' ? 'padding' : undefined}
       >
-        <TouchableOpacity style={styles.back} onPress={() => router.back()}>
-          <Text style={styles.backText}>← Back</Text>
-        </TouchableOpacity>
-        <Text style={styles.title}>Forgot password?</Text>
-        <Text style={styles.subtitle}>
-          Enter your email and we'll send you a link to reset your password.
-        </Text>
-        <Input
-          label="Email"
-          value={email}
-          onChangeText={setEmail}
-          placeholder="you@example.com"
-          keyboardType="email-address"
-          autoCapitalize="none"
-          autoComplete="email"
-        />
-        {error ? <Text style={styles.errorText}>{error}</Text> : null}
-        <Button title="Send reset link" onPress={handleSubmit} loading={loading} />
-      </ScrollView>
-    </KeyboardAvoidingView>
+        <ScrollView
+          contentContainerStyle={styles.scrollContent}
+          keyboardShouldPersistTaps="handled"
+          showsVerticalScrollIndicator={false}
+        >
+          <TouchableOpacity style={styles.back} onPress={() => router.back()}>
+            <Text style={styles.backText}>← Back</Text>
+          </TouchableOpacity>
+
+          <View style={styles.card}>
+            <Text style={styles.title}>Forgot password?</Text>
+            <Text style={styles.subtitle}>
+              Enter your email and we'll send you a link to reset your password.
+            </Text>
+            <Input
+              label="Email"
+              value={email}
+              onChangeText={setEmail}
+              placeholder="you@example.com"
+              keyboardType="email-address"
+              autoCapitalize="none"
+              autoComplete="email"
+            />
+            {error ? <Text style={styles.errorText}>{error}</Text> : null}
+            <Button title="Send reset link" onPress={handleSubmit} loading={loading} />
+          </View>
+        </ScrollView>
+      </KeyboardAvoidingView>
+    </SafeAreaView>
   );
 }
 
 const styles = StyleSheet.create({
-  container: { flex: 1, backgroundColor: '#fff' },
+  safe: { flex: 1, backgroundColor: '#f1f5f9' },
+  container: { flex: 1 },
   scrollContent: {
     flexGrow: 1,
-    padding: 24,
-    paddingTop: 60,
-    maxWidth: 400,
+    padding: 20,
+    maxWidth: 420,
     width: '100%',
     alignSelf: 'center',
   },
-  back: { marginBottom: 24 },
-  backText: { fontSize: 16, color: '#2563eb', fontWeight: '500' },
-  box: { flex: 1, padding: 24, justifyContent: 'center', maxWidth: 400, alignSelf: 'center' },
-  title: { fontSize: 24, fontWeight: '700', color: '#111', marginBottom: 12 },
-  subtitle: { fontSize: 15, color: '#666', marginBottom: 24 },
-  message: { fontSize: 15, color: '#666', marginBottom: 24 },
-  errorText: { fontSize: 12, color: '#c00', marginBottom: 12 },
+  sentContainer: { flex: 1, padding: 20, justifyContent: 'center', alignItems: 'center' },
+  back: { marginBottom: 20 },
+  backText: { fontSize: 16, color: '#2563eb', fontWeight: '600' },
+  card: {
+    backgroundColor: '#fff',
+    borderRadius: 16,
+    padding: 24,
+    width: '100%',
+    maxWidth: 420,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.06,
+    shadowRadius: 8,
+    elevation: 3,
+  },
+  title: { fontSize: 22, fontWeight: '700', color: '#111827', marginBottom: 12 },
+  subtitle: { fontSize: 15, color: '#6b7280', marginBottom: 24 },
+  message: { fontSize: 15, color: '#6b7280', marginBottom: 24 },
+  errorText: { fontSize: 12, color: '#dc2626', marginTop: -8, marginBottom: 12 },
 });

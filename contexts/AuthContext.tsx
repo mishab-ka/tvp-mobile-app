@@ -75,6 +75,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   };
 
   const signUp = async (email: string, password: string) => {
+    // Email confirmation is disabled in Supabase: Authentication → Providers → Email → "Confirm email" OFF
     const { error } = await supabase.auth.signUp({ email, password });
     return { error: error ?? null };
   };

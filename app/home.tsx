@@ -8,6 +8,7 @@ import {
   TouchableOpacity,
   RefreshControl,
 } from 'react-native';
+import { SafeAreaView } from 'react-native-safe-area-context';
 import { useRouter } from 'expo-router';
 import { useAuth } from '../contexts/AuthContext';
 import { Button } from '../components/Button';
@@ -56,14 +57,17 @@ export default function HomeScreen() {
 
   if (!driver) {
     return (
-      <View style={styles.center}>
-        <Text style={styles.noProfile}>No driver profile found.</Text>
-        <Button title="Logout" onPress={handleSignOut} variant="outline" />
-      </View>
+      <SafeAreaView style={styles.safe} edges={['top', 'bottom']}>
+        <View style={styles.center}>
+          <Text style={styles.noProfile}>No driver profile found.</Text>
+          <Button title="Logout" onPress={handleSignOut} variant="outline" />
+        </View>
+      </SafeAreaView>
     );
   }
 
   return (
+    <SafeAreaView style={styles.safe} edges={['top', 'bottom']}>
     <ScrollView
       style={styles.container}
       contentContainerStyle={styles.content}
@@ -129,10 +133,12 @@ export default function HomeScreen() {
         ) : null}
       </View>
     </ScrollView>
+    </SafeAreaView>
   );
 }
 
 const styles = StyleSheet.create({
+  safe: { flex: 1, backgroundColor: '#f1f5f9' },
   container: { flex: 1, backgroundColor: '#f1f5f9' },
   content: { padding: 16, paddingBottom: 40 },
   center: { flex: 1, justifyContent: 'center', alignItems: 'center', padding: 24 },

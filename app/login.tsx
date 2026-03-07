@@ -9,6 +9,7 @@ import {
   ScrollView,
   Alert,
 } from 'react-native';
+import { SafeAreaView } from 'react-native-safe-area-context';
 import { useRouter } from 'expo-router';
 import { useAuth } from '../contexts/AuthContext';
 import { Input } from '../components/Input';
@@ -45,73 +46,91 @@ export default function LoginScreen() {
   };
 
   return (
-    <KeyboardAvoidingView
-      style={styles.container}
-      behavior={Platform.OS === 'ios' ? 'padding' : undefined}
-    >
-      <ScrollView
-        contentContainerStyle={styles.scrollContent}
-        keyboardShouldPersistTaps="handled"
-        showsVerticalScrollIndicator={false}
+    <SafeAreaView style={styles.safe} edges={['top', 'bottom']}>
+      <KeyboardAvoidingView
+        style={styles.container}
+        behavior={Platform.OS === 'ios' ? 'padding' : undefined}
       >
-        <Text style={styles.title}>TVP Driver</Text>
-        <Text style={styles.subtitle}>Sign in to your account</Text>
-
-        <Input
-          label="Email"
-          value={email}
-          onChangeText={setEmail}
-          placeholder="you@example.com"
-          keyboardType="email-address"
-          autoCapitalize="none"
-          autoComplete="email"
-          error={errors.email}
-        />
-        <Input
-          label="Password"
-          value={password}
-          onChangeText={setPassword}
-          placeholder="••••••••"
-          secureTextEntry
-          autoComplete="password"
-          error={errors.password}
-        />
-
-        <TouchableOpacity
-          style={styles.forgotLink}
-          onPress={() => router.push('/forgot-password')}
+        <ScrollView
+          contentContainerStyle={styles.scrollContent}
+          keyboardShouldPersistTaps="handled"
+          showsVerticalScrollIndicator={false}
         >
-          <Text style={styles.forgotText}>Forgot password?</Text>
-        </TouchableOpacity>
+          <View style={styles.card}>
+            <Text style={styles.brand}>TVP Driver</Text>
+            <Text style={styles.title}>Welcome back</Text>
+            <Text style={styles.subtitle}>Sign in to your account</Text>
 
-        <Button title="Login" onPress={handleLogin} loading={loading} />
+            <Input
+              label="Email"
+              value={email}
+              onChangeText={setEmail}
+              placeholder="you@example.com"
+              keyboardType="email-address"
+              autoCapitalize="none"
+              autoComplete="email"
+              error={errors.email}
+            />
+            <Input
+              label="Password"
+              value={password}
+              onChangeText={setPassword}
+              placeholder="••••••••"
+              secureTextEntry
+              autoComplete="password"
+              error={errors.password}
+            />
 
-        <View style={styles.footer}>
-          <Text style={styles.footerText}>Don't have an account? </Text>
-          <TouchableOpacity onPress={() => router.push('/register')}>
-            <Text style={styles.signUpLink}>Sign up</Text>
-          </TouchableOpacity>
-        </View>
-      </ScrollView>
-    </KeyboardAvoidingView>
+            <TouchableOpacity
+              style={styles.forgotLink}
+              onPress={() => router.push('/forgot-password')}
+            >
+              <Text style={styles.forgotText}>Forgot password?</Text>
+            </TouchableOpacity>
+
+            <Button title="Sign in" onPress={handleLogin} loading={loading} />
+          </View>
+
+          <View style={styles.footer}>
+            <Text style={styles.footerText}>Don't have an account? </Text>
+            <TouchableOpacity onPress={() => router.push('/register')}>
+              <Text style={styles.footerLink}>Sign up</Text>
+            </TouchableOpacity>
+          </View>
+        </ScrollView>
+      </KeyboardAvoidingView>
+    </SafeAreaView>
   );
 }
 
 const styles = StyleSheet.create({
-  container: { flex: 1, backgroundColor: '#fff' },
+  safe: { flex: 1, backgroundColor: '#f1f5f9' },
+  container: { flex: 1 },
   scrollContent: {
     flexGrow: 1,
-    padding: 24,
-    paddingTop: 80,
-    maxWidth: 400,
+    padding: 20,
+    paddingTop: 40,
+    maxWidth: 420,
     width: '100%',
     alignSelf: 'center',
   },
-  title: { fontSize: 28, fontWeight: '700', color: '#111', marginBottom: 8 },
-  subtitle: { fontSize: 16, color: '#666', marginBottom: 32 },
-  forgotLink: { alignSelf: 'flex-end', marginBottom: 24 },
-  forgotText: { fontSize: 14, color: '#2563eb', fontWeight: '500' },
-  footer: { flexDirection: 'row', marginTop: 24, justifyContent: 'center', alignItems: 'center' },
-  footerText: { fontSize: 15, color: '#666' },
-  signUpLink: { fontSize: 15, color: '#2563eb', fontWeight: '600' },
+  card: {
+    backgroundColor: '#fff',
+    borderRadius: 16,
+    padding: 24,
+    marginBottom: 24,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.06,
+    shadowRadius: 8,
+    elevation: 3,
+  },
+  brand: { fontSize: 13, fontWeight: '600', color: '#2563eb', letterSpacing: 0.5, marginBottom: 8 },
+  title: { fontSize: 24, fontWeight: '700', color: '#111827', marginBottom: 6 },
+  subtitle: { fontSize: 15, color: '#6b7280', marginBottom: 24 },
+  forgotLink: { alignSelf: 'flex-end', marginBottom: 20 },
+  forgotText: { fontSize: 14, color: '#2563eb', fontWeight: '600' },
+  footer: { flexDirection: 'row', justifyContent: 'center', alignItems: 'center' },
+  footerText: { fontSize: 15, color: '#6b7280' },
+  footerLink: { fontSize: 15, color: '#2563eb', fontWeight: '600' },
 });

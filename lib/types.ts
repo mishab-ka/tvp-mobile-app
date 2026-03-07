@@ -1,0 +1,38 @@
+export interface TvpDriver {
+  id: string;
+  driver_code: string | null;
+  full_name: string;
+  email: string | null;
+  phone: string | null;
+  address: string | null;
+  region: string | null;
+  status: string | null;
+  deposit_amount: number | null;
+  outstanding_balance: number | null;
+  net_outstanding: number | null;
+  payment_delay_days: number | null;
+  performance_score: number | null;
+  total_earnings: number | null;
+  total_cash_collect: number | null;
+  vehicle_numbers: string[] | null;
+  aadhar_front_url: string | null;
+  aadhar_back_url: string | null;
+  license_front_url: string | null;
+  license_back_url: string | null;
+  profile_photo_url?: string | null;
+  notes: string | null;
+  join_date: string | null;
+  created_at: string | null;
+  updated_at: string | null;
+  category: string | null;
+  cumulative_rental_days: number | null;
+  alternative_phone_1: string | null;
+  alternative_phone_2: string | null;
+  alternative_phone_3: string | null;
+  room_deposit: number | null;
+  pre_paid_rent_amount: number | null;
+  documents_charge: number | null;
+  uber_driver_photos: string[] | null;
+  including_room: boolean | null;
+  penalty_amount: number | null;
+}

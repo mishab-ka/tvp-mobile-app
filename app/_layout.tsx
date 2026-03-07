@@ -10,6 +10,7 @@ export default function RootLayout() {
         <Stack.Screen name="register" />
         <Stack.Screen name="home" />
         <Stack.Screen name="forgot-password" />
+        <Stack.Screen name="upload-documents" />
       </Stack>
     </AuthProvider>
   );

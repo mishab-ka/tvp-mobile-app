@@ -143,6 +143,12 @@ export default function HomeScreen() {
             </View>
           </View>
           <Row label="Phone" value={driver.phone} />
+          <Row label="Alternative Number 1" value={driver.alternative_phone_1} />
+          <Row label="Alternative Number 2" value={driver.alternative_phone_2} />
+          <Row label="Alternative Number 3" value={driver.alternative_phone_3} />
+          <Row label="Address" value={driver.address} />
+          <Row label="Prepaid Amount" value={formatINR(driver.pre_paid_rent_amount)} />
+          <Row label="Document Charges" value={formatINR(driver.documents_charge)} />
           <Row label="Region" value={driver.region} />
           <Row label="Category" value={driver.category === 'single_driver' ? 'Single Driver' : driver.category === 'double_driver' ? 'Double Driver' : driver.category} />
           <TouchableOpacity style={styles.logoutBtn} onPress={handleSignOut}>
@@ -184,7 +190,7 @@ export default function HomeScreen() {
               <Text style={styles.docWarningText}>⚠ Please upload pending documents to activate your driver account.</Text>
             </View>
           )}
-          <TouchableOpacity style={styles.primaryButton}>
+          <TouchableOpacity style={styles.primaryButton} onPress={() => router.push('/upload-documents')}>
             <Text style={styles.primaryButtonText}>Upload Documents</Text>
           </TouchableOpacity>
         </Card>
@@ -258,7 +264,7 @@ export default function HomeScreen() {
 
         {/* 9. QUICK ACTIONS */}
         <Card title="Quick Actions" icon="⚡">
-          <TouchableOpacity style={styles.actionBtn}>
+          <TouchableOpacity style={styles.actionBtn} onPress={() => router.push('/upload-documents')}>
             <Text style={styles.actionBtnText}>Upload Documents</Text>
           </TouchableOpacity>
           <TouchableOpacity style={styles.actionBtn}>

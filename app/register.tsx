@@ -33,7 +33,9 @@ export default function RegisterScreen() {
     if (!fullName.trim()) next.fullName = 'Name is required';
     if (!email.trim()) next.email = 'Email is required';
     else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) next.email = 'Enter a valid email';
-    if (!phone.trim()) next.phone = 'Phone is required';
+    const digitsOnly = phone.replace(/\D/g, '');
+    if (!digitsOnly) next.phone = 'Phone is required';
+    else if (digitsOnly.length !== 10) next.phone = 'Phone must be exactly 10 digits (numbers only)';
     if (!password) next.password = 'Password is required';
     else if (password.length < 6) next.password = 'Password must be at least 6 characters';
     if (password !== confirmPassword) next.confirmPassword = 'Passwords do not match';
@@ -57,7 +59,7 @@ export default function RegisterScreen() {
       const { error: insertError } = await supabase.from('tvp_drivers').insert({
         full_name: fullName.trim(),
         email: email.trim(),
-        phone: phone.trim(),
+        phone: phone.replace(/\D/g, '').slice(0, 10),
         alternative_phone_1: alternativePhone.trim() || null,
         status: 'active',
       });
@@ -114,11 +116,12 @@ export default function RegisterScreen() {
               error={errors.email}
             />
             <Input
-              label="Phone"
+              label="Phone (10 digits only)"
               value={phone}
-              onChangeText={setPhone}
-              placeholder="Phone number"
+              onChangeText={(t) => setPhone(t.replace(/\D/g, '').slice(0, 10))}
+              placeholder="e.g. 9876543210"
               keyboardType="phone-pad"
+              maxLength={10}
               error={errors.phone}
             />
             <Input

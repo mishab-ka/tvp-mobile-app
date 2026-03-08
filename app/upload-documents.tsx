@@ -15,7 +15,6 @@ import * as ImagePicker from 'expo-image-picker';
 import { useAuth } from '../contexts/AuthContext';
 import { supabase } from '../lib/supabase';
 import { uploadDriverDocument } from '../lib/upload';
-import { theme } from '../constants/theme';
 
 const DOCUMENTS = [
   { id: 'profile', label: 'Profile Photo', field: 'profile_photo_url', type: 'profile' },
@@ -29,9 +28,11 @@ export default function UploadDocumentsScreen() {
   const router = useRouter();
   const { driver, refreshDriver } = useAuth();
   const [uploading, setUploading] = useState<string | null>(null);
+  const [uploadingUber, setUploadingUber] = useState(false);
 
   const email = driver?.email?.trim();
   const hasDriver = !!driver && !!email;
+  const uberPhotos = driver?.uber_driver_photos ?? [];
 
   const pickAndUpload = async (doc: (typeof DOCUMENTS)[number]) => {
     if (!hasDriver) return;
@@ -70,6 +71,36 @@ export default function UploadDocumentsScreen() {
     if (!driver) return false;
     const v = (driver as Record<string, unknown>)[field];
     return typeof v === 'string' && v.trim().length > 0;
+  };
+
+  const addUberPhoto = async () => {
+    if (!hasDriver) return;
+    const { status } = await ImagePicker.requestMediaLibraryPermissionsAsync();
+    if (status !== 'granted') {
+      Alert.alert('Permission needed', 'Allow access to photos to upload.');
+      return;
+    }
+    const result = await ImagePicker.launchImageLibraryAsync({
+      mediaTypes: ['images'],
+      allowsEditing: false,
+      quality: 0.8,
+    });
+    if (result.canceled || !result.assets[0]) return;
+    setUploadingUber(true);
+    try {
+      const url = await uploadDriverDocument(email!, 'uber', result.assets[0].uri, uberPhotos.length);
+      const newUrls = [...uberPhotos, url];
+      const { error } = await supabase
+        .from('tvp_drivers')
+        .update({ uber_driver_photos: newUrls })
+        .eq('email', email);
+      if (error) throw error;
+      await refreshDriver();
+    } catch (e: unknown) {
+      Alert.alert('Error', e instanceof Error ? e.message : 'Upload failed');
+    } finally {
+      setUploadingUber(false);
+    }
   };
 
   if (!hasDriver) {
@@ -115,7 +146,7 @@ export default function UploadDocumentsScreen() {
                   </Text>
                 </View>
                 {loading ? (
-                  <ActivityIndicator size="small" color={theme.primary} />
+                  <ActivityIndicator size="small" color="#2563eb" />
                 ) : uploaded && doc.id === 'profile' && driver?.profile_photo_url ? (
                   <Image source={{ uri: driver.profile_photo_url }} style={styles.thumb} />
                 ) : (
@@ -131,30 +162,56 @@ export default function UploadDocumentsScreen() {
         <View style={styles.warningBox}>
           <Text style={styles.warningText}>⚠ Upload clear photos. All 5 documents are required to activate your account.</Text>
         </View>
+
+        <Text style={styles.sectionTitle}>Driver photos (Uber)</Text>
+        <Text style={styles.sectionSubtitle}>Add one or more driver photos. These appear on your Home profile.</Text>
+        <View style={styles.uberCard}>
+          {uberPhotos.length > 0 && (
+            <View style={styles.uberGrid}>
+              {uberPhotos.map((url, i) => (
+                <Image key={i} source={{ uri: url }} style={styles.uberThumb} resizeMode="cover" />
+              ))}
+            </View>
+          )}
+          <TouchableOpacity
+            style={[styles.uberAddBtn, uploadingUber && styles.uberAddBtnDisabled]}
+            onPress={addUberPhoto}
+            disabled={uploadingUber}
+          >
+            {uploadingUber ? (
+              <ActivityIndicator size="small" color="#fff" />
+            ) : (
+              <Text style={styles.uberAddBtnText}>+ Add driver photo</Text>
+            )}
+          </TouchableOpacity>
+        </View>
       </ScrollView>
     </SafeAreaView>
   );
 }
 
 const styles = StyleSheet.create({
-  safe: { flex: 1, backgroundColor: theme.backgroundSecondary },
+  safe: { flex: 1, backgroundColor: '#f1f5f9' },
   container: { flex: 1 },
   content: { padding: 20, paddingBottom: 40 },
   center: { flex: 1, justifyContent: 'center', alignItems: 'center', padding: 24 },
-  noDriver: { fontSize: 16, color: theme.textSecondary, marginBottom: 16 },
+  noDriver: { fontSize: 16, color: '#6b7280', marginBottom: 16 },
   back: { marginBottom: 16 },
-  backText: { fontSize: 16, color: theme.primary, fontWeight: '600' },
-  backBtn: { paddingVertical: 12, paddingHorizontal: 20, backgroundColor: theme.primary, borderRadius: 12 },
+  backText: { fontSize: 16, color: '#2563eb', fontWeight: '600' },
+  backBtn: { paddingVertical: 12, paddingHorizontal: 20, backgroundColor: '#2563eb', borderRadius: 10 },
   backBtnText: { fontSize: 15, fontWeight: '600', color: '#fff' },
-  title: { fontSize: 22, fontWeight: '700', color: theme.text, marginBottom: 8 },
-  subtitle: { fontSize: 14, color: theme.textSecondary, marginBottom: 20, lineHeight: 20 },
+  title: { fontSize: 22, fontWeight: '700', color: '#111827', marginBottom: 8 },
+  subtitle: { fontSize: 14, color: '#6b7280', marginBottom: 20, lineHeight: 20 },
   card: {
-    backgroundColor: theme.card,
+    backgroundColor: '#fff',
     borderRadius: 16,
-    borderWidth: 1,
-    borderColor: theme.border,
     padding: 4,
     marginBottom: 20,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.06,
+    shadowRadius: 8,
+    elevation: 3,
   },
   docRow: {
     flexDirection: 'row',
@@ -162,16 +219,34 @@ const styles = StyleSheet.create({
     justifyContent: 'space-between',
     padding: 16,
     borderBottomWidth: 1,
-    borderBottomColor: theme.borderLight,
+    borderBottomColor: '#f3f4f6',
   },
   docRowDisabled: { opacity: 0.7 },
   docLeft: { flex: 1 },
-  docLabel: { fontSize: 16, fontWeight: '600', color: theme.text, marginBottom: 4 },
-  docStatusOk: { fontSize: 13, color: theme.success },
-  docStatusPending: { fontSize: 13, color: theme.warning },
-  thumb: { width: 48, height: 48, borderRadius: 24, backgroundColor: theme.borderLight },
-  uploadBadge: { backgroundColor: theme.primary, paddingVertical: 8, paddingHorizontal: 14, borderRadius: 10 },
+  docLabel: { fontSize: 16, fontWeight: '600', color: '#111827', marginBottom: 4 },
+  docStatusOk: { fontSize: 13, color: '#059669' },
+  docStatusPending: { fontSize: 13, color: '#d97706' },
+  thumb: { width: 48, height: 48, borderRadius: 24, backgroundColor: '#f3f4f6' },
+  uploadBadge: { backgroundColor: '#2563eb', paddingVertical: 8, paddingHorizontal: 14, borderRadius: 10 },
   uploadBadgeText: { fontSize: 14, fontWeight: '600', color: '#fff' },
-  warningBox: { backgroundColor: '#fef9c3', padding: 14, borderRadius: 12 },
+  warningBox: { backgroundColor: '#fef3c7', padding: 14, borderRadius: 12, marginBottom: 20 },
   warningText: { fontSize: 13, color: '#92400e' },
+  sectionTitle: { fontSize: 18, fontWeight: '700', color: '#111827', marginBottom: 6 },
+  sectionSubtitle: { fontSize: 14, color: '#6b7280', marginBottom: 12 },
+  uberCard: {
+    backgroundColor: '#fff',
+    borderRadius: 16,
+    padding: 20,
+    marginBottom: 20,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.06,
+    shadowRadius: 8,
+    elevation: 3,
+  },
+  uberGrid: { flexDirection: 'row', flexWrap: 'wrap', gap: 10, marginBottom: 16 },
+  uberThumb: { width: 72, height: 72, borderRadius: 12, backgroundColor: '#f3f4f6' },
+  uberAddBtn: { backgroundColor: '#2563eb', paddingVertical: 14, borderRadius: 12, alignItems: 'center' },
+  uberAddBtnDisabled: { opacity: 0.7 },
+  uberAddBtnText: { fontSize: 15, fontWeight: '600', color: '#fff' },
 });

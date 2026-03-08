@@ -19,6 +19,27 @@ Copy `.env.example` to `.env` and set your Supabase URL and anon key (or use the
 
 - **Storage**: Create a bucket named `driver-documents` in Supabase Dashboard (Storage). Configure RLS so authenticated users can upload (e.g. allow `insert` and `select` for `auth.role() = 'authenticated'` on that bucket).
 
+- **Vehicle details (View Vehicles screen)**: Create the table below so drivers see status, assigned date and rental days per vehicle. If the table is missing, the app still shows vehicle numbers from `tvp_drivers.vehicle_numbers` with placeholders.
+
+  ```sql
+  CREATE TABLE public.tvp_vehicle_assignments (
+    id uuid PRIMARY KEY DEFAULT gen_random_uuid(),
+    driver_id uuid NOT NULL REFERENCES public.tvp_drivers(id) ON DELETE CASCADE,
+    vehicle_number text NOT NULL,
+    status text DEFAULT 'active',
+    assigned_date date DEFAULT current_date,
+    current_rental_days integer DEFAULT 0,
+    notes text NULL,
+    created_at timestamptz DEFAULT now(),
+    updated_at timestamptz DEFAULT now()
+  );
+  CREATE INDEX idx_tvp_vehicle_assignments_driver_id ON public.tvp_vehicle_assignments(driver_id);
+  ALTER TABLE public.tvp_vehicle_assignments ENABLE ROW LEVEL SECURITY;
+  CREATE POLICY "Drivers can read own assignments"
+    ON public.tvp_vehicle_assignments FOR SELECT TO authenticated
+    USING (driver_id IN (SELECT id FROM public.tvp_drivers WHERE email = (auth.jwt() ->> 'email')));
+  ```
+
 - **Auth**: Email/password auth is used. To allow login immediately after sign-up (no email confirmation), in Supabase go to **Authentication → Providers → Email** and turn **Confirm email** off.
 
 ### 3. Run the app

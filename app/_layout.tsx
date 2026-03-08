@@ -8,9 +8,10 @@ export default function RootLayout() {
         <Stack.Screen name="index" />
         <Stack.Screen name="login" />
         <Stack.Screen name="register" />
-        <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
+        <Stack.Screen name="home" />
         <Stack.Screen name="forgot-password" />
         <Stack.Screen name="upload-documents" />
+        <Stack.Screen name="view-vehicles" />
       </Stack>
     </AuthProvider>
   );

@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useMemo } from 'react';
 import {
   View,
   Text,
@@ -8,7 +8,14 @@ import {
   Image,
   Alert,
   ActivityIndicator,
+  Modal,
+  Pressable,
+  Dimensions,
 } from 'react-native';
+
+const { height: WINDOW_HEIGHT } = Dimensions.get('window');
+const PREVIEW_MODAL_HEIGHT = Math.min(WINDOW_HEIGHT * 0.88, 640);
+const PREVIEW_SCROLL_HEIGHT = PREVIEW_MODAL_HEIGHT - 60;
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useRouter } from 'expo-router';
 import * as ImagePicker from 'expo-image-picker';
@@ -29,6 +36,7 @@ export default function UploadDocumentsScreen() {
   const { driver, refreshDriver } = useAuth();
   const [uploading, setUploading] = useState<string | null>(null);
   const [uploadingUber, setUploadingUber] = useState(false);
+  const [previewVisible, setPreviewVisible] = useState(false);
 
   const email = driver?.email?.trim();
   const hasDriver = !!driver && !!email;
@@ -72,6 +80,14 @@ export default function UploadDocumentsScreen() {
     const v = (driver as Record<string, unknown>)[field];
     return typeof v === 'string' && v.trim().length > 0;
   };
+
+  const uploadedForPreview = useMemo(() => {
+    if (!driver) return [];
+    return DOCUMENTS.filter((doc) => getStatus(doc.field)).map((doc) => ({
+      label: doc.label,
+      url: (driver as Record<string, unknown>)[doc.field] as string,
+    }));
+  }, [driver]);
 
   const addUberPhoto = async () => {
     if (!hasDriver) return;
@@ -185,7 +201,51 @@ export default function UploadDocumentsScreen() {
             )}
           </TouchableOpacity>
         </View>
+
+        <TouchableOpacity
+          style={styles.previewButton}
+          onPress={() => setPreviewVisible(true)}
+        >
+          <Text style={styles.previewButtonText}>Preview Documents</Text>
+        </TouchableOpacity>
       </ScrollView>
+
+      <Modal
+        visible={previewVisible}
+        transparent
+        animationType="fade"
+        onRequestClose={() => setPreviewVisible(false)}
+      >
+        <View style={styles.previewOverlay}>
+          <Pressable style={StyleSheet.absoluteFill} onPress={() => setPreviewVisible(false)} />
+          <View style={[styles.previewModal, { height: PREVIEW_MODAL_HEIGHT }]}>
+            <View style={styles.previewHeader}>
+              <Text style={styles.previewTitle}>Uploaded Documents</Text>
+              <TouchableOpacity onPress={() => setPreviewVisible(false)} hitSlop={12}>
+                <Text style={styles.previewClose}>Close</Text>
+              </TouchableOpacity>
+            </View>
+            <ScrollView
+              style={[styles.previewScroll, { height: PREVIEW_SCROLL_HEIGHT }]}
+              contentContainerStyle={styles.previewScrollContent}
+              showsVerticalScrollIndicator={true}
+              bounces={true}
+              scrollEventThrottle={16}
+            >
+              {uploadedForPreview.length === 0 ? (
+                <Text style={styles.previewEmpty}>No documents uploaded yet.</Text>
+              ) : (
+                uploadedForPreview.map((item, i) => (
+                  <View key={i} style={styles.previewItem}>
+                    <Text style={styles.previewLabel}>{item.label}</Text>
+                    <Image source={{ uri: item.url }} style={styles.previewImage} resizeMode="contain" />
+                  </View>
+                ))
+              )}
+            </ScrollView>
+          </View>
+        </View>
+      </Modal>
     </SafeAreaView>
   );
 }
@@ -249,4 +309,42 @@ const styles = StyleSheet.create({
   uberAddBtn: { backgroundColor: '#2563eb', paddingVertical: 14, borderRadius: 12, alignItems: 'center' },
   uberAddBtnDisabled: { opacity: 0.7 },
   uberAddBtnText: { fontSize: 15, fontWeight: '600', color: '#fff' },
+  previewButton: {
+    backgroundColor: '#059669',
+    paddingVertical: 14,
+    borderRadius: 12,
+    alignItems: 'center',
+    marginTop: 8,
+    marginBottom: 24,
+  },
+  previewButtonText: { fontSize: 16, fontWeight: '600', color: '#fff' },
+  previewOverlay: {
+    flex: 1,
+    backgroundColor: 'rgba(0,0,0,0.5)',
+    justifyContent: 'center',
+    alignItems: 'center',
+    padding: 20,
+  },
+  previewModal: {
+    backgroundColor: '#fff',
+    borderRadius: 16,
+    width: '100%',
+    overflow: 'hidden',
+  },
+  previewHeader: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    padding: 16,
+    borderBottomWidth: 1,
+    borderBottomColor: '#e5e7eb',
+  },
+  previewTitle: { fontSize: 18, fontWeight: '700', color: '#111827' },
+  previewClose: { fontSize: 16, fontWeight: '600', color: '#2563eb' },
+  previewScroll: {},
+  previewScrollContent: { padding: 16, paddingBottom: 40 },
+  previewItem: { marginBottom: 24 },
+  previewLabel: { fontSize: 14, fontWeight: '600', color: '#374151', marginBottom: 8 },
+  previewImage: { width: '100%', height: 180, backgroundColor: '#f3f4f6', borderRadius: 12 },
+  previewEmpty: { fontSize: 15, color: '#6b7280', textAlign: 'center', paddingVertical: 24 },
 });

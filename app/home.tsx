@@ -73,7 +73,7 @@ export default function HomeScreen() {
   const openViewVehiclesScreen = () => router.push('/view-vehicles');
 
   const docStatus = useMemo(() => {
-    if (!driver) return { list: [] as { name: string; uploaded: boolean }[], completed: 0, total: 5 };
+    if (!driver) return { list: [] as { name: string; uploaded: boolean }[], completed: 0, total: 5, missing: [] as { name: string }[] };
     const list = [
       { name: 'Profile Photo', uploaded: !!(driver.profile_photo_url?.trim()) },
       { name: 'Aadhar Front', uploaded: !!(driver.aadhar_front_url?.trim()) },
@@ -82,7 +82,8 @@ export default function HomeScreen() {
       { name: 'Driving License Back', uploaded: !!(driver.license_back_url?.trim()) },
     ];
     const completed = list.filter((d) => d.uploaded).length;
-    return { list, completed, total: 5 };
+    const missing = list.filter((d) => !d.uploaded).map((d) => ({ name: d.name }));
+    return { list, completed, total: 5, missing };
   }, [driver]);
 
   const alerts = useMemo(() => {
@@ -173,32 +174,30 @@ export default function HomeScreen() {
           </Card>
         )}
 
-        {/* 2. DOCUMENT STATUS */}
-        <Card title="Document Status" icon="📄">
-          <View style={styles.docCompletionWrap}>
-            <Text style={styles.docCompletionLabel}>Document Completion</Text>
-            <View style={styles.progressBarBg}>
-              <View style={[styles.progressBarFill, { width: `${(docStatus.completed / docStatus.total) * 100}%` }]} />
+        {/* 2. DOCUMENT STATUS - only when there are missing documents; hide section when all uploaded */}
+        {hasPendingDocs && (
+          <Card title="Document Status" icon="📄">
+            <View style={styles.docCompletionWrap}>
+              <Text style={styles.docCompletionLabel}>Document Completion</Text>
+              <View style={styles.progressBarBg}>
+                <View style={[styles.progressBarFill, { width: `${(docStatus.completed / docStatus.total) * 100}%` }]} />
+              </View>
+              <Text style={styles.docCompletionPct}>{Math.round((docStatus.completed / docStatus.total) * 100)}%</Text>
             </View>
-            <Text style={styles.docCompletionPct}>{Math.round((docStatus.completed / docStatus.total) * 100)}%</Text>
-          </View>
-          {docStatus.list.map((d, i) => (
-            <View key={i} style={styles.docRow}>
-              <Text style={styles.docName}>{d.name}</Text>
-              <Text style={d.uploaded ? styles.docUploaded : styles.docPending}>
-                {d.uploaded ? 'Uploaded ✅' : 'Pending ⚠ Upload Required'}
-              </Text>
-            </View>
-          ))}
-          {hasPendingDocs && (
+            {docStatus.missing.map((d, i) => (
+              <View key={i} style={styles.docRow}>
+                <Text style={styles.docName}>{d.name}</Text>
+                <Text style={styles.docPending}>Pending ⚠ Upload Required</Text>
+              </View>
+            ))}
             <View style={styles.docWarning}>
               <Text style={styles.docWarningText}>⚠ Please upload pending documents to activate your driver account.</Text>
             </View>
-          )}
-          <TouchableOpacity style={styles.primaryButton} onPress={() => router.push('/upload-documents')}>
-            <Text style={styles.primaryButtonText}>Upload Documents</Text>
-          </TouchableOpacity>
-        </Card>
+            <TouchableOpacity style={styles.primaryButton} onPress={() => router.push('/upload-documents')}>
+              <Text style={styles.primaryButtonText}>Upload Documents</Text>
+            </TouchableOpacity>
+          </Card>
+        )}
 
         {/* 3. VEHICLES - View details opens vehicle page */}
         <Card title="Assigned Vehicles" icon="🚗">

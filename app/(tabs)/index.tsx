@@ -208,41 +208,36 @@ export default function HomeTab() {
           </View>
         </View>
 
-        <Card
-          title="Document Status"
-          icon={<Ionicons name="document-text-outline" size={22} color={theme.primary} style={styles.cardIconEl} />}
-        >
-          <View style={styles.docCompletionWrap}>
-            <Text style={styles.docCompletionLabel}>Document Completion</Text>
-            <View style={styles.progressBarBg}>
-              <View style={[styles.progressBarFill, { width: `${(docStatus.completed / docStatus.total) * 100}%` }]} />
-            </View>
-            <Text style={styles.docCompletionPct}>{Math.round((docStatus.completed / docStatus.total) * 100)}%</Text>
-          </View>
-          {docStatus.list.map((d, i) => (
-            <View key={i} style={styles.docRow}>
-              <Text style={styles.docName}>{d.name}</Text>
-              <View style={styles.docStatusRow}>
-                {d.uploaded ? (
-                  <Ionicons name="checkmark-circle" size={18} color={theme.success} />
-                ) : (
-                  <Ionicons name="time-outline" size={18} color={theme.warning} />
-                )}
-                <Text style={d.uploaded ? styles.docUploaded : styles.docPending}>
-                  {d.uploaded ? 'Uploaded' : 'Pending'}
-                </Text>
+        {/* Document Status: hidden when all documents are uploaded */}
+        {hasPendingDocs && (
+          <Card
+            title="Document Status"
+            icon={<Ionicons name="document-text-outline" size={22} color={theme.primary} style={styles.cardIconEl} />}
+          >
+            <View style={styles.docCompletionWrap}>
+              <Text style={styles.docCompletionLabel}>Document Completion</Text>
+              <View style={styles.progressBarBg}>
+                <View style={[styles.progressBarFill, { width: `${(docStatus.completed / docStatus.total) * 100}%` }]} />
               </View>
+              <Text style={styles.docCompletionPct}>{Math.round((docStatus.completed / docStatus.total) * 100)}%</Text>
             </View>
-          ))}
-          {hasPendingDocs && (
+            {docStatus.list.filter((d) => !d.uploaded).map((d, i) => (
+              <View key={i} style={styles.docRow}>
+                <Text style={styles.docName}>{d.name}</Text>
+                <View style={styles.docStatusRow}>
+                  <Ionicons name="time-outline" size={18} color={theme.warning} />
+                  <Text style={styles.docPending}>Pending</Text>
+                </View>
+              </View>
+            ))}
             <View style={styles.docWarning}>
               <Text style={styles.docWarningText}>Please upload pending documents to activate your account.</Text>
             </View>
-          )}
-          <TouchableOpacity style={styles.primaryButton} onPress={() => router.push('/upload-documents')}>
-            <Text style={styles.primaryButtonText}>Upload Documents</Text>
-          </TouchableOpacity>
-        </Card>
+            <TouchableOpacity style={styles.primaryButton} onPress={() => router.push('/upload-documents')}>
+              <Text style={styles.primaryButtonText}>Upload Documents</Text>
+            </TouchableOpacity>
+          </Card>
+        )}
 
         <Card
           title="Assigned Vehicles"

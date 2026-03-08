@@ -264,7 +264,7 @@ export default function HomeTab() {
           <TouchableOpacity style={styles.actionBtn} onPress={() => router.push('/upload-documents')}>
             <Text style={styles.actionBtnText}>Upload Documents</Text>
           </TouchableOpacity>
-          <TouchableOpacity style={styles.actionBtn}>
+          <TouchableOpacity style={styles.actionBtn} onPress={() => router.push('/view-vehicles')}>
             <Text style={styles.actionBtnText}>View Vehicles</Text>
           </TouchableOpacity>
           <TouchableOpacity style={styles.actionBtn}>

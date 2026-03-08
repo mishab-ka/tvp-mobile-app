@@ -1,8 +1,8 @@
-import { useEffect } from 'react';
-import { View, ActivityIndicator, StyleSheet } from 'react-native';
-import { SafeAreaView } from 'react-native-safe-area-context';
-import { useRouter } from 'expo-router';
-import { useAuth } from '../contexts/AuthContext';
+import { useEffect } from "react";
+import { View, ActivityIndicator, StyleSheet } from "react-native";
+import { SafeAreaView } from "react-native-safe-area-context";
+import { useRouter } from "expo-router";
+import { useAuth } from "../contexts/AuthContext";
 
 export default function Index() {
   const { session, loading } = useAuth();
@@ -11,14 +11,14 @@ export default function Index() {
   useEffect(() => {
     if (loading) return;
     if (session) {
-      router.replace('/(tabs)');
+      router.replace("/(tabs)");
     } else {
-      router.replace('/login');
+      router.replace("/login");
     }
   }, [session, loading, router]);
 
   return (
-    <SafeAreaView style={styles.container} edges={['top', 'bottom']}>
+    <SafeAreaView style={styles.container} edges={["top", "bottom"]}>
       <ActivityIndicator size="large" color="#84cc16" />
     </SafeAreaView>
   );
@@ -27,8 +27,8 @@ export default function Index() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
-    backgroundColor: '#f8faf5',
+    justifyContent: "center",
+    alignItems: "center",
+    backgroundColor: "#fff",
   },
 });
